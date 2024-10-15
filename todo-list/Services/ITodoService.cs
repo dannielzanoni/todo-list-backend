@@ -9,5 +9,6 @@ namespace todo_list.Services
         Task<TodoItem> CreateTaskAsync(TodoItem todoItem);
         Task<bool> UpdateTaskAsync(TodoItem todoItem);
         Task<bool> DeleteTaskAsync(int id);
+        Task<IEnumerable<TodoItem>> GetTasksByUserIdAsync(int userId);
     }
 }

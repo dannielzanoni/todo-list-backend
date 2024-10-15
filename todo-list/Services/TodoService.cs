@@ -42,7 +42,8 @@ namespace todo_list.Services
 
         public async Task<IEnumerable<TodoItem>> GetAllTasksAsync()
         {
-            return await _context.TodoItems.ToListAsync(); 
+            var tasks = await _context.TodoItems.ToListAsync();
+            return tasks;
         }
 
         public async Task<TodoItem> GetTaskByIdAsync(int id)
@@ -66,6 +67,13 @@ namespace todo_list.Services
             _context.TodoItems.Update(taskToUpdate);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<TodoItem>> GetTasksByUserIdAsync(int userId)
+        {
+            return await _context.TodoItems
+                .Where(task => task.UserId == userId)
+                .ToListAsync();
         }
     }
 }

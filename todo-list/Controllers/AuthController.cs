@@ -30,8 +30,9 @@ namespace todo_list.Controllers
                 return Unauthorized();
             }
 
-            var token = GenerateJwtToken(user.Username);
-            return Ok(new { Token = token });
+            var token = GenerateJwtToken(user);
+            var userName = user.Username;
+            return Ok(new { Token = token, userName = user.Username });
         }
 
         [HttpPost("signup")]
@@ -48,7 +49,9 @@ namespace todo_list.Controllers
                 var user = new User { Username = userDto.Username, PasswordHash = userDto.Password };
                 await _userService.Register(user);
 
-                return Ok(new { message = "Registration successful" });
+                var token = GenerateJwtToken(user); 
+
+                return Ok(new { message = "Registration successful", Token = token });
             }
             catch (Exception ex)
             {
@@ -57,13 +60,13 @@ namespace todo_list.Controllers
             }
         }
 
-
-        private string GenerateJwtToken(string username)
+        private string GenerateJwtToken(User user)
         {
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, username),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -78,5 +81,6 @@ namespace todo_list.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

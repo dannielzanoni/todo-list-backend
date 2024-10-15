@@ -1,4 +1,6 @@
-﻿namespace todo_list.Models
+﻿using System.Text.Json.Serialization;
+
+namespace todo_list.Models
 {
     public class TodoItem
     {
@@ -7,6 +9,7 @@
         public string Description { get; set; }
         public bool IsFinished { get; set; }
         public int UserId { get; set; }
+        [JsonIgnore]
         public User User { get; set; }
     }
 }

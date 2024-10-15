@@ -7,6 +7,6 @@ namespace todo_list.Services
         Task<User> Authenticate(string username, string password);
         Task Register(User user);
         Task<User> GetByUsername(string username);
+        Task<int?> GetUserIdByUsernameAsync(string username);
     }
-
 }

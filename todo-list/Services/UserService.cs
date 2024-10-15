@@ -36,6 +36,11 @@ namespace todo_list.Services
         {
             return await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
         }
-    }
 
+        public async Task<int?> GetUserIdByUsernameAsync(string username)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            return user?.Id;
+        }
+    }
 }

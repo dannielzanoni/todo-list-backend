@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,16 +15,34 @@ namespace todo_list.Controllers
     {
         private readonly IConfiguration _configuration;
         private readonly ITodoService _todoService;
+        private readonly IUserService _userService;
 
-        public TodoController(IConfiguration configuration)
+        public TodoController(IConfiguration configuration, ITodoService todoService, IUserService userService)
         {
             _configuration = configuration;
+            _todoService = todoService;
+            _userService = userService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TodoItem>>> GetTasks()
         {
-            var tasks = await _todoService.GetAllTasksAsync();
+            var userIdResult = await GetUserIdAsync(); 
+
+            if (userIdResult.Result is UnauthorizedResult || userIdResult.Result is NotFoundObjectResult)
+            {
+                return userIdResult.Result; 
+            }
+
+            var userId = userIdResult.Value; 
+
+            var tasks = await _todoService.GetTasksByUserIdAsync(userId);
+
+            if (tasks == null || !tasks.Any())
+            {
+                return Ok(new { message = "Nenhuma tarefa encontrada." });
+            }
+
             return Ok(tasks);
         }
 
@@ -41,12 +60,27 @@ namespace todo_list.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateTask([FromBody] TodoItem todoItem)
         {
+            var userIdResult = await GetUserIdAsync();
+
+            if (userIdResult.Result is UnauthorizedResult || userIdResult.Result is NotFoundObjectResult)
+            {
+                return userIdResult.Result; 
+            }
+
             if (todoItem == null)
             {
                 return BadRequest();
             }
 
+            todoItem.UserId = userIdResult.Value;
+
             var createdTask = await _todoService.CreateTaskAsync(todoItem);
+
+            if (createdTask == null)
+            {
+                return StatusCode(500, new { message = "Falha ao criar a tarefa." });
+            }
+
             return CreatedAtAction(nameof(GetTask), new { id = createdTask.Id }, createdTask);
         }
 
@@ -64,7 +98,7 @@ namespace todo_list.Controllers
                 return NotFound();
             }
 
-            return NoContent();
+            return Ok(todoItem);
         }
 
         [HttpDelete("delete/{id}")]
@@ -79,5 +113,23 @@ namespace todo_list.Controllers
             return NoContent();
         }
 
+        private async Task<ActionResult<int>> GetUserIdAsync()
+        {
+            var usernameClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (usernameClaim == null)
+            {
+                return Unauthorized();
+            }
+
+            var userId = await _userService.GetUserIdByUsernameAsync(usernameClaim);
+
+            if (userId == null)
+            {
+                return NotFound(new { message = "Usuário não encontrado." });
+            }
+
+            return userId.Value;
+        }
     }
 }
