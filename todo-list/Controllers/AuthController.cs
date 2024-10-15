@@ -31,7 +31,7 @@ namespace todo_list.Controllers
             }
 
             var token = GenerateJwtToken(user);
-            var userName = user.Username;
+
             return Ok(new { Token = token, userName = user.Username });
         }
 
@@ -43,15 +43,15 @@ namespace todo_list.Controllers
                 var existingUser = await _userService.GetByUsername(userDto.Username);
                 if (existingUser != null)
                 {
-                    return BadRequest(new { message = "Username already exists" });
+                    return BadRequest(new { message = "Nome de usuário já existente!" });
                 }
 
                 var user = new User { Username = userDto.Username, PasswordHash = userDto.Password };
                 await _userService.Register(user);
 
-                var token = GenerateJwtToken(user); 
+                var token = GenerateJwtToken(user);
 
-                return Ok(new { message = "Registration successful", Token = token });
+                return Ok(new { message = "Usuário criado com sucesso!", Token = token, userName = user.Username });
             }
             catch (Exception ex)
             {
