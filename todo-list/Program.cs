@@ -10,9 +10,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-            builder => builder.WithOrigins("http://localhost:4200", "https://todo-list-app-ea2cc.web.app")
-                              .AllowAnyMethod()
+            builder => builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://todo-list-app-ea2cc.web.app")
                               .AllowAnyHeader()
+                              .AllowAnyMethod()
                               .AllowCredentials());
 });
 
@@ -52,9 +52,9 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-app.UseRouting();
 app.UseCors("AllowSpecificOrigin");
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
