@@ -11,7 +11,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
     {
-        builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://todo-list-app-ea2cc.web.app");
+        builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://todo-list-app-ea2cc.web.app", "https://todo-list-app-angular.fly.dev");
         builder.AllowAnyHeader();
         builder.AllowAnyMethod();
         builder.AllowCredentials();
