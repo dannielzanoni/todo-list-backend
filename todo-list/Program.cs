@@ -52,9 +52,9 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowSpecificOrigin");
-app.UseHttpsRedirection();
 app.UseRouting();
+app.UseHttpsRedirection();
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthentication();
 app.UseAuthorization();
 
