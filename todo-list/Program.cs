@@ -10,7 +10,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-            builder => builder.WithOrigins("http://localhost:4200", "https://todolistapibackend.azurewebsites.net")
+            builder => builder.WithOrigins("http://localhost:4200", "https://todo-list-app-ea2cc.web.app")
                               .AllowAnyMethod()
                               .AllowAnyHeader()
                               .AllowCredentials());
