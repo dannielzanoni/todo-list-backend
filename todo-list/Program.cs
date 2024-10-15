@@ -52,14 +52,15 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+app.UseRouting();
+app.UseCors("AllowSpecificOrigin");
+//app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseCors("AllowSpecificOrigin");
-app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 
