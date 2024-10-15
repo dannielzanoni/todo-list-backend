@@ -9,11 +9,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowSpecificOrigin",
-            builder => builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://todo-list-app-ea2cc.web.app")
-                              .AllowAnyHeader()
-                              .AllowAnyMethod()
-                              .AllowCredentials());
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+    {
+        builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "https://todo-list-app-ea2cc.web.app");
+        builder.AllowAnyHeader();
+        builder.AllowAnyMethod();
+        builder.AllowCredentials();
+    });
 });
 
 // Add services to the container.
@@ -52,11 +54,11 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
-app.UseRouting();
 app.UseHttpsRedirection();
-app.UseCors("AllowSpecificOrigin");
-app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseSwagger();
 app.UseSwaggerUI();
