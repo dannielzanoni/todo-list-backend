@@ -10,9 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:4200")
-                          .AllowAnyHeader()
-                          .AllowAnyMethod());
+            builder => builder.WithOrigins("http://localhost:4200", "https://todolistapibackend.azurewebsites.net")
+                              .AllowAnyMethod()
+                              .AllowAnyHeader()
+                              .AllowCredentials());
 });
 
 // Add services to the container.
@@ -51,17 +52,13 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+
+app.UseSwagger();
+app.UseSwaggerUI();
+
 app.UseCors("AllowSpecificOrigin");
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
