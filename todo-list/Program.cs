@@ -54,6 +54,12 @@ builder.Services.AddAuthentication(options =>
 
 var app = builder.Build();
 
+app.MapFallback(async context =>
+{
+    context.Response.ContentType = "text/plain";
+    await context.Response.WriteAsync("API is running. Please use the appropriate endpoints.");
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
